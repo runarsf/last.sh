@@ -8,19 +8,37 @@ COLOR_PURPLE='\033[1;35m'
 COLOR_CYAN='\033[1;36m'
 COLOR_NONE='\033[0m'
 
+usage () {
+	printf "\n\t ${COLOR_GREEN}"
+	printf                            "\n\t    ██╗     ███████╗███████╗"
+	printf                            "\n\t    ██║     ██╔══██║██╔════╝"
+	printf                            "\n\t    ██║     ███████║███████╗"
+	printf                            "\n\t    ██║     ██╔══██║╚════██║"
+	printf "\n\t ${COLOR_CYAN}██╗${COLOR_GREEN}███████╗██║  ██║███████║"
+	printf "\n\t ${COLOR_CYAN}╚═╝${COLOR_GREEN}╚══════╝╚═╝  ╚═╝╚══════╝"
+	printf "${COLOR_NONE}"
+	printf "\n\n\t ${COLOR_ORANGE}This script may install other related prerequisites/versions of the listed packages..."
+	printf "\n\n\t ${COLOR_CYAN}./deploy.sh desktop"
+	printf "\n\t\t ${COLOR_PURPLE}zsh | gvim | git | rofi | urxvt | i3 | polybar | ranger | compton | python(pip) | tmux | dos2unix"
+	printf "\n\n\t ${COLOR_CYAN}./deploy.sh server"
+	printf "\n\t\t ${COLOR_PURPLE}zsh | vim | git | tmux | dos2unix"
+	printf "\n\n\t ${COLOR_CYAN}./deploy.sh --help"
+	printf "\n\t\t ${COLOR_PURPLE}show this dialogue"
+	printf "\n\n\t ${COLOR_CYAN}./deploy.sh --os"
+	printf "\n\t\t ${COLOR_PURPLE}show supported operating systems/distros"
+	printf "\n\n ${COLOR_NONE}"
+}
+
 run () {
-	printf "run\n"
 	credentials
 	runner
 }
 
 refresh () {
-	printf "refresh\n"
 	source /etc/environment
 }
 
 credentials () {
-	printf "credentials\n"
 	refresh
 	if [[ $LASTFM_USER == "" ]] || [[ $LASTFM_API_KEY == "" ]]; then
 		getCredentials
@@ -28,8 +46,6 @@ credentials () {
 }
 
 getCredentials () {
-	printf "getCredentials\n"
-	
 	printf "${COLOR_GREEN}"
 	read -p "Username: " LASTFM_USER
 	printf "${COLOR_RED}"
@@ -45,7 +61,6 @@ getCredentials () {
 }
 
 saveCredentials () {
-	printf "saveCredentials\n"
 	refresh
 	if [[ $LASTFM_USER == "" ]]; then
 		sudo echo -e "\nLASTFM_USER=\"$LASTFM_USER\"" >> /etc/environment
@@ -64,7 +79,6 @@ saveCredentials () {
 }
 
 deleteCredentials () {
-	printf "deleteCredentials\n"
 	sudo sed -i 's/.*LASTFM_USER.*//g' /etc/environment
 	sudo sed -i 's/.*LASTFM_API_KEY.*//g' /etc/environment
 	sed -i '/^$/d' /etc/environment
@@ -72,25 +86,36 @@ deleteCredentials () {
 }
 
 runner () {
-	printf "runner\n"
 	refresh
 
 	prev=""
 	while true; do
-		response=`curl -s "http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=$LASTFM_USER&api_key=$LASTFM_API_KEY&format=json"`
-		echo "$response"
-		exit 0
-		#if [ $prev != $current ]; then
-		#	printf "new"
-		#fi
-		#sleep 1
+		response=`curl -s "http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=$LASTFM_USER&api_key=$LASTFM_API_KEY&format=json"` 
+		artist=`echo "$response" | jq ".[] | .track | .[0] | .artist " | tr -d "\#" | jq ".text" | tr -d '"'`
+		track=`echo "$response" | jq ".[] | .track | .[0] | .name" | tr -d '"'`
+		album=`echo "$response" | jq ".[] | .track | .[0] | .album " | tr -d "\#" | jq ".text" | tr -d '"'`
+		curr="--> $artist : $track ( $album )"
+		if [ "$prev" != "$curr" ]; then
+			echo "$curr"
+			prev="$curr"
+		fi
+		sleep 3; 
 	done
 }
 
-while getopts "rdc" arg; do
+if [ "$#" -gt 1 ]; then
+	printf "\n${COLOR_RED}Too ${COLOR_ORANGE}many ${COLOR_RED}arguments!${COLOR_NONE}"
+	exit 1
+fi
+if [ "$#" -lt 1 ]; then
+	printf "\n${COLOR_RED}Too ${COLOR_ORANGE}few ${COLOR_RED}arguments!${COLOR_NONE}"
+	exit 1
+fi
+while getopts "rdc " arg; do
 	case "${arg}" in
 		r) run;;
 		d) deleteCredentials;;
 		c) getCredentials;;
+		*) usage;;
 	esac
 done
