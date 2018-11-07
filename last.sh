@@ -10,23 +10,15 @@ COLOR_NONE='\033[0m'
 
 usage () {
 	printf "\n\t ${COLOR_GREEN}"
-	printf                            "\n\t    ██╗     ███████╗███████╗"
-	printf                            "\n\t    ██║     ██╔══██║██╔════╝"
-	printf                            "\n\t    ██║     ███████║███████╗"
-	printf                            "\n\t    ██║     ██╔══██║╚════██║"
-	printf "\n\t ${COLOR_CYAN}██╗${COLOR_GREEN}███████╗██║  ██║███████║"
-	printf "\n\t ${COLOR_CYAN}╚═╝${COLOR_GREEN}╚══════╝╚═╝  ╚═╝╚══════╝"
-	printf "${COLOR_NONE}"
-	printf "\n\n\t ${COLOR_ORANGE}This script may install other related prerequisites/versions of the listed packages..."
-	printf "\n\n\t ${COLOR_CYAN}./deploy.sh desktop"
-	printf "\n\t\t ${COLOR_PURPLE}zsh | gvim | git | rofi | urxvt | i3 | polybar | ranger | compton | python(pip) | tmux | dos2unix"
-	printf "\n\n\t ${COLOR_CYAN}./deploy.sh server"
-	printf "\n\t\t ${COLOR_PURPLE}zsh | vim | git | tmux | dos2unix"
-	printf "\n\n\t ${COLOR_CYAN}./deploy.sh --help"
-	printf "\n\t\t ${COLOR_PURPLE}show this dialogue"
-	printf "\n\n\t ${COLOR_CYAN}./deploy.sh --os"
-	printf "\n\t\t ${COLOR_PURPLE}show supported operating systems/distros"
-	printf "\n\n ${COLOR_NONE}"
+	printf "\n\t██╗     ███████╗███████╗████████╗███████╗██╗   ██╗"
+	printf "\n\t██║     ██╔══██║██╔════╝ ╚═██╔══╝██╔════╝██║   ██║"
+	printf "\n\t██║     ███████║███████╗   ██║   ███████╗████████║"
+	printf "\n\t██║     ██╔══██║╚════██║   ██║   ╚════██║██╔═══██║"
+	printf "\n\t███████╗██║  ██║███████║   ██║${COLOR_CYAN}██╗${COLOR_GREEN}███████║██║   ██║"
+	printf "\n\t╚══════╝╚═╝  ╚═╝╚══════╝   ╚═╝${COLOR_CYAN}╚═╝${COLOR_GREEN}╚══════╝╚═╝   ╚═╝"
+	printf "\n${COLOR_NONE}"
+	printf "\n\t help coming soon"
+	printf "\n${COLOR_NONE}"
 }
 
 run () {
@@ -111,11 +103,11 @@ if [ "$#" -lt 1 ]; then
 	printf "\n${COLOR_RED}Too ${COLOR_ORANGE}few ${COLOR_RED}arguments!${COLOR_NONE}"
 	exit 1
 fi
-while getopts "rdc " arg; do
+while getopts "rdch " arg; do
 	case "${arg}" in
 		r) run;;
 		d) deleteCredentials;;
 		c) getCredentials;;
-		*) usage;;
+		h|*) usage;;
 	esac
 done
