@@ -102,6 +102,10 @@ runner () {
 		album=`echo "$response" | jq ".[] | .track | .[0] | .album " | tr -d "\#" | jq ".text" | tr -d '"'`
 		curr="--> $artist : $track ( $album )"
 		if [ "$prev" != "$curr" ]; then
+
+			prevlen=`echo -n $prev | wc -c`
+			printf "\ \r%.0s" {1..$prevlen}
+
 			echo -en "$curr\r"
 			prev="$curr"
 		fi
