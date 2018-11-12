@@ -7,7 +7,6 @@ last.sh is a simple shell application to display your currently playing last.fm 
 Prerequisites & requirements
 ----------------------------
 
-
 - jq
 
 Installation
@@ -30,3 +29,8 @@ Usage
  -r            Run.
  -d            Delete credentials.
  -c            Set credentials, overwrites already existing.
+
+Known issues
+------------
+
+- If output is longer than terminal window, a new line will be added each poll.

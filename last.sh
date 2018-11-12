@@ -101,12 +101,13 @@ runner () {
 		track=`echo "$response" | jq ".[] | .track | .[0] | .name" | tr -d '"'`
 		album=`echo "$response" | jq ".[] | .track | .[0] | .album " | tr -d "\#" | jq ".text" | tr -d '"'`
 		curr="--> $artist : $track ( $album )"
-		if [ "$prev" != "$curr" ]; then
 
+		isPlaying=`echo "$response" | jq '.[] | .track | .[0] | .["@attr"] | .nowplaying' | tr -d '"'`
+		if [[ $isPlaying != true ]]; then
+			echo -en "\r|\033[2K"
+			prev="$curr"
+		elif [[ $isPlaying == true ]]; then
 			echo -en "\033[2K"
-			#prevlen=`echo -n $prev | wc -c`
-			#printf "\ \r%.0s" {1..$prevlen}
-
 			echo -en "$curr\r"
 			prev="$curr"
 		fi
