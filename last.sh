@@ -104,7 +104,7 @@ runner () {
 
 		isPlaying=`echo "$response" | jq '.[] | .track | .[0] | .["@attr"] | .nowplaying' | tr -d '"'`
 		if [[ $isPlaying != true ]]; then
-			echo -en "\r|\033[2K"
+			echo -en "\033[2K"
 			prev="$curr"
 		elif [[ $isPlaying == true ]]; then
 			echo -en "\033[2K"
