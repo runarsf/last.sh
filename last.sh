@@ -103,8 +103,9 @@ runner () {
 		curr="--> $artist : $track ( $album )"
 		if [ "$prev" != "$curr" ]; then
 
-			prevlen=`echo -n $prev | wc -c`
-			printf "\ \r%.0s" {1..$prevlen}
+			echo -en "\033[2K"
+			#prevlen=`echo -n $prev | wc -c`
+			#printf "\ \r%.0s" {1..$prevlen}
 
 			echo -en "$curr\r"
 			prev="$curr"
@@ -114,14 +115,6 @@ runner () {
 	done
 }
 
-if [ "$#" -gt 1 ]; then
-	printf "\n${COLOR_RED}Too ${COLOR_ORANGE}many ${COLOR_RED}arguments!${COLOR_NONE}"
-	exit 1
-fi
-if [ "$#" -lt 1 ]; then
-	printf "\n${COLOR_RED}Too ${COLOR_ORANGE}few ${COLOR_RED}arguments!${COLOR_NONE}"
-	exit 1
-fi
 while getopts "rdch " arg; do
 	case "${arg}" in
 		r) run;;
