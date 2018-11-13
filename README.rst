@@ -34,3 +34,4 @@ Known issues
 ------------
 
 - If output is longer than terminal window, a new line will be added each poll.
+- Credentials not being removed from environment. Try machine restart, only known place of saving is /etc/environment
