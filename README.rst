@@ -30,8 +30,11 @@ Usage
  -d            Delete credentials.
  -c            Set credentials, overwrites already existing.
 
-Known issues
-------------
+Known issues // Fixes
+---------------------
 
-- If output is longer than terminal window, a new line will be added each poll.
+- If output is longer than terminal window, a new line will be added each poll. To circumvent this, the output information is reduced;
+
+  - ``--> artist : track ( album )`` > ``--> artist : track`` > ``--> track``. If the track name itself is too long to display, an error will be displayed.
+
 - Credentials not being removed from environment. Try machine restart, only known place of saving is /etc/environment

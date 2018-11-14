@@ -108,6 +108,15 @@ runner () {
 			prev="$curr"
 		elif [[ $isPlaying == true ]]; then
 			echo -en "\033[2K"
+			if (( ${#curr} > `tput cols` )); then
+				curr="--> $artist : $track"
+				if (( ${#curr} > `tput cols` )); then
+					curr="--> $track"
+					if (( ${#curr} > `tput cols` )); then
+						curr="--> Error: README.rst"
+					fi
+				fi
+			fi
 			echo -en "$curr\r"
 			prev="$curr"
 		fi
