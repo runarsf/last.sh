@@ -2,7 +2,7 @@
 **last.sh**
 -----------
 
-last.sh is a simple shell application to display your currently playing last.fm song.
+last.sh is a simple shell application to display your *currently playing* last.fm song.
 
 Prerequisites & requirements
 ----------------------------
@@ -37,4 +37,6 @@ Known issues // Fixes
 
   - ``--> artist : track ( album )`` > ``--> artist : track`` > ``--> track``. If the track name itself is too long to display, an error will be displayed.
 
-- Credentials not being removed from environment. Try machine restart, only known place of saving is /etc/environment
+- Credentials not being removed from environment. Credentials are only stored in /etc/environment, the cause might be how your machine handles this.
+
+  - Try machine restart, or run ``last.sh -c`` to set new credentials.
