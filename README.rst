@@ -29,9 +29,24 @@ Usage
  -r            Run.
  -d            Delete credentials.
  -c            Set credentials, overwrites already existing.
+ -a            Relay API information. Returns formatted reply in cleartext."
+ -q            Relay API information. Returns json."
 
-Known issues // Fixes
----------------------
+Q
+-
+
+- What is "API mode", and how do I use it?
+
+  - API mode basically just outputs (un)formatted data.
+
+  .. code-block:: bash
+
+    [last.sh] echo "Queen, Bohemian Rhapsody" | grep "`last.sh -a album`"
+    Queen, **\ Bohemian Rhapsody**
+
+- If username or API key is not set before running in "API mode", script will always exit with no output. This is in order not to get a false reply.
+
+  - To fix this, run ``last.sh -c`` to set credentials.
 
 - If output is longer than terminal window, a new line will be added each poll. To circumvent this, the output information is reduced;
 

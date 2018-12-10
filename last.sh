@@ -22,6 +22,8 @@ usage () {
 	printf "\n\t\t -h\t\tHelp"
 	printf "\n\t\t -c\t\tCredentials setup."
 	printf "\n\t\t -d\t\tDelete credentials."
+	printf "\n\t\t -a\t\tRelay API information. Returns formatted reply in cleartext."
+	printf "\n\t\t -q\t\tRelay API information. Returns json."
 	printf "\n\n${COLOR_NONE}"
 }
 
@@ -30,8 +32,48 @@ run () {
 	runner
 }
 
-refresh () {
+ctapi () {
 	source /etc/environment
+	if [[ $LASTFM_USER == "" ]] || [[ $LASTFM_API_KEY == "" ]]; then
+		exit 1
+	fi
+
+	response=`curl -s "http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=$LASTFM_USER&api_key=$LASTFM_API_KEY&format=json"`
+	if [[ "${OPTARG}" == "track" ]]; then
+		track=`echo "$response" | jq ".[] | .track | .[0] | .name" | tr -d '"'`
+		printf "$track"
+		exit 0
+	elif [[ "${OPTARG}" == "artist" ]]; then
+		artist=`echo "$response" | jq ".[] | .track | .[0] | .artist" | tr -d "\#" | jq ".text" | tr -d '"'`
+		printf "$artist"
+		exit 0
+	elif [[ "${OPTARG}" == "album" ]]; then
+		album=`echo "$response" | jq ".[] | .track | .[0] | .album" | tr -d "\#" | jq ".text" | tr -d '"'`
+		printf "$album"
+		exit 0
+	elif [[ "${OPTARG}" == "url" ]]; then
+		url=`echo "$response" | jq ".[] | .track | .[0] | .url" | tr -d '"'`
+		printf "$url"
+		exit 0
+	fi
+}
+
+jqapi () {
+	source /etc/environment
+	if [[ $LASTFM_USER == "" ]] || [[ $LASTFM_API_KEY == "" ]]; then
+		exit 1
+	fi
+
+	response=`curl -s "http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=$LASTFM_USER&api_key=$LASTFM_API_KEY&format=json"`
+
+	if [[ "${OPTARG}" == "pure" ]]; then
+		printf "$response"
+		exit 0
+	elif [[ "${OPTARG}" == "track" ]]; then
+		track=`echo "$response" | jq ".[] | .track | .[0]" | tr -d '"'`
+		printf "$track"
+		exit 0
+	fi
 }
 
 animate () {
@@ -44,7 +86,7 @@ animate () {
 }
 
 credentials () {
-	refresh
+	source /etc/environment
 	if [[ $LASTFM_USER == "" ]] || [[ $LASTFM_API_KEY == "" ]]; then
 		getCredentials
 	fi
@@ -66,7 +108,7 @@ getCredentials () {
 }
 
 saveCredentials () {
-	refresh
+	source /etc/environment
 	if [[ $LASTFM_USER == "" ]]; then
 		sudo echo -e "\nLASTFM_USER=\"$LASTFM_USER\"" >> /etc/environment
 	else
@@ -91,7 +133,7 @@ deleteCredentials () {
 }
 
 runner () {
-	refresh
+	source /etc/environment
 
 	prev=""
 	while true; do
@@ -125,11 +167,13 @@ runner () {
 	done
 }
 
-while getopts "rdch " arg; do
+while getopts "rdcha:q: " arg; do
 	case "${arg}" in
 		r) run;;
 		d) deleteCredentials;;
 		c) getCredentials;;
+		a) ctapi;;
+		q) jqapi;;
 		h|*) usage;;
 	esac
 done
