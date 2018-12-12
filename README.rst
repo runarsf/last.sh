@@ -31,6 +31,7 @@ Usage
  -c            Set credentials, overwrites already existing.
  -a            Relay API information. Returns formatted reply in cleartext."
  -q            Relay API information. Returns json."
+ -p            Polybar mode, returns output once.
 
 Q
 -

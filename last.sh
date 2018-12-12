@@ -24,12 +24,31 @@ usage () {
 	printf "\n\t\t -d\t\tDelete credentials."
 	printf "\n\t\t -a\t\tRelay API information. Returns formatted reply in cleartext."
 	printf "\n\t\t -q\t\tRelay API information. Returns json."
+	printf "\n\t\t -p\t\tPolybar mode, returns output once."
 	printf "\n\n${COLOR_NONE}"
 }
 
 run () {
 	credentials
 	runner
+}
+
+polybar () {
+	source /etc/environment
+	if [[ $LASTFM_USER == "" ]] || [[ $LASTFM_API_KEY == "" ]]; then
+		exit 1
+	fi
+
+	response=`curl -s "http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=$LASTFM_USER&api_key=$LASTFM_API_KEY&format=json"`
+	artist=`echo "$response" | jq ".[] | .track | .[0] | .artist " | tr -d "\#" | jq ".text" | tr -d '"'`
+	track=`echo "$response" | jq ".[] | .track | .[0] | .name" | tr -d '"'`
+	album=`echo "$response" | jq ".[] | .track | .[0] | .album " | tr -d "\#" | jq ".text" | tr -d '"'`
+	curr="$track - $artist"
+
+	isPlaying=`echo "$response" | jq '.[] | .track | .[0] | .["@attr"] | .nowplaying' | tr -d '"'`
+	if [[ $isPlaying == true ]]; then
+		echo "$curr"
+	fi
 }
 
 ctapi () {
@@ -167,11 +186,12 @@ runner () {
 	done
 }
 
-while getopts "rdcha:q: " arg; do
+while getopts "rdchpa:q: " arg; do
 	case "${arg}" in
 		r) run;;
 		d) deleteCredentials;;
 		c) getCredentials;;
+		p) polybar;;
 		a) ctapi;;
 		q) jqapi;;
 		h|*) usage;;
