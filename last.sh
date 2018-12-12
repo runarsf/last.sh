@@ -48,6 +48,8 @@ polybar () {
 	isPlaying=`echo "$response" | jq '.[] | .track | .[0] | .["@attr"] | .nowplaying' | tr -d '"'`
 	if [[ $isPlaying == true ]]; then
 		echo "$curr"
+	else
+		echo ""
 	fi
 }
 
