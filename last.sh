@@ -25,11 +25,13 @@ usage () {
 	printf "\n\t\t -a\t\tRelay API information. Returns formatted reply in cleartext."
 	printf "\n\t\t -q\t\tRelay API information. Returns json."
 	printf "\n\t\t -p\t\tPolybar mode, returns output once."
+	printf "\n\t\t -u\t\tDefine a custom user that is not saved as credentials."
 	printf "\n\n${COLOR_NONE}"
 }
 
-run () {
+customUser () {
 	credentials
+	LASTFM_USER=${OPTARG}
 	runner
 }
 
@@ -54,11 +56,6 @@ polybar () {
 }
 
 ctapi () {
-	source /etc/environment
-	if [[ $LASTFM_USER == "" ]] || [[ $LASTFM_API_KEY == "" ]]; then
-		exit 1
-	fi
-
 	response=`curl -s "http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=$LASTFM_USER&api_key=$LASTFM_API_KEY&format=json"`
 	if [[ "${OPTARG}" == "track" ]]; then
 		track=`echo "$response" | jq ".[] | .track | .[0] | .name" | tr -d '"'`
@@ -80,11 +77,6 @@ ctapi () {
 }
 
 jqapi () {
-	source /etc/environment
-	if [[ $LASTFM_USER == "" ]] || [[ $LASTFM_API_KEY == "" ]]; then
-		exit 1
-	fi
-
 	response=`curl -s "http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=$LASTFM_USER&api_key=$LASTFM_API_KEY&format=json"`
 
 	if [[ "${OPTARG}" == "pure" ]]; then
@@ -154,8 +146,6 @@ deleteCredentials () {
 }
 
 runner () {
-	source /etc/environment
-
 	prev=""
 	while true; do
 		animate
@@ -188,14 +178,15 @@ runner () {
 	done
 }
 
-while getopts "rdchpa:q: " arg; do
+while getopts "rdchpu:a:q: " arg; do
 	case "${arg}" in
-		r) run;;
+		r) credentials; runner;;
 		d) deleteCredentials;;
 		c) getCredentials;;
 		p) polybar;;
-		a) ctapi;;
-		q) jqapi;;
+		a) credentials; ctapi;;
+		q) credentials; jqapi;;
+		u) customUser;;
 		h|*) usage;;
 	esac
 done
